@@ -2,3 +2,4 @@ compressed_output.ulaw
 
 decompressed.pcm
 .vscode/tasks.json
+.vscode/settings.json

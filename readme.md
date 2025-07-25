@@ -13,4 +13,5 @@ shutdown -P now
 # TESTING
 Ensure audio file is exported as mono .wav file with 8000Hz sample rate
 play compressed file - ffplay -f mulaw -ar 8000 compressed_output.ulaw    
+play decompressed file - ffplay -f s16le -ar 8000 decompressed.pcm
    
