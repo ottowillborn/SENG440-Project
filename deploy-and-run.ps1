@@ -17,7 +17,7 @@ scp -P $remotePort audio_sample.wav main.c readme.md "${remoteUser}@${remoteHost
 
 # === Build, generate assembly, and run remotely ===
 Write-Host "Building and running inside VM..."
-ssh -p $remotePort "${remoteUser}@${remoteHost}" "cd $remoteDir && gcc -O2 -Wall main.c -o main.out && gcc -O2 -S main.c -o main.s && ./main.out"
+ssh -p $remotePort "${remoteUser}@${remoteHost}" "cd $remoteDir && gcc -O3 -march=native -Wall -funroll-loops -fomit-frame-pointer main.c -o main.out && gcc -O3 -march=native -Wall -S -fomit-frame-pointer main.c -o main.s && ./main.out"
 
 # === Download output files ===
 Write-Host "Downloading compressed_output.ulaw back to local machine..."

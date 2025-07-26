@@ -41,6 +41,9 @@ int16_t ulaw_decompress(uint8_t ulaw_byte) {
     return sign ? magnitude : -magnitude;
 }
 
+
+#define BLOCK_SIZE 4096
+
 int main() {
     FILE *fin = fopen("audio_sample.wav", "rb");
     FILE *fout = fopen("compressed_output.ulaw", "wb");
@@ -49,23 +52,29 @@ int main() {
 
     fseek(fin, 44, SEEK_SET); // Skip WAV header
 
+    int16_t in_buffer[BLOCK_SIZE];
+    uint8_t compressed_buffer[BLOCK_SIZE];
+    int16_t out_buffer[BLOCK_SIZE];
+
     clock_t start = clock();  // Start timer
 
-    int16_t sample;
-    while (fread(&sample, sizeof sample, 1, fin) == 1) {
-        uint8_t compressed = ulaw_compress(sample);
-        fwrite(&compressed, sizeof compressed, 1, fout);
-
-        int16_t restored = ulaw_decompress(compressed);
-        fwrite(&restored, sizeof restored, 1, frec);
+    size_t read_count;
+    while ((read_count = fread(in_buffer, sizeof(int16_t), BLOCK_SIZE, fin)) > 0) {
+        for (size_t i = 0; i < read_count; ++i) {
+            compressed_buffer[i] = ulaw_compress(in_buffer[i]);
+            out_buffer[i] = ulaw_decompress(compressed_buffer[i]);
+        }
+        fwrite(compressed_buffer, sizeof(uint8_t), read_count, fout);
+        fwrite(out_buffer, sizeof(int16_t), read_count, frec);
     }
 
-    clock_t end = clock();    // End timer
-    double elapsed_secs = (double)(end - start) / CLOCKS_PER_SEC;
+    clock_t end = clock();  // End timer
 
     fclose(fin); fclose(fout); fclose(frec);
 
+    double elapsed_secs = (double)(end - start) / CLOCKS_PER_SEC;
     printf("Done compressing and decompressing\n");
     printf("Elapsed time: %.6f seconds\n", elapsed_secs);
+
     return 0;
 }
