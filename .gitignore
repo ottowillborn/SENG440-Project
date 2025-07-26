@@ -1,6 +1,4 @@
-compressed_output.ulaw
-
-decompressed.pcm
+# SENG440 Project .gitignore
 .vscode/tasks.json
 .vscode/settings.json
 main.s
